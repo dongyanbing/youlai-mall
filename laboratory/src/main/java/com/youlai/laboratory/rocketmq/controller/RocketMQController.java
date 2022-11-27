@@ -3,13 +3,13 @@ package com.youlai.laboratory.rocketmq.controller;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 
 
+import com.youlai.common.result.Result;
+import com.youlai.laboratory.rocketmq.pojo.MessageVO;
 import com.youlai.laboratory.rocketmq.producer.*;
 import com.youlai.laboratory.rocketmq.producer.tx.TxProducer;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -20,8 +20,8 @@ import javax.annotation.Resource;
 
 @Api(tags = "[实验室]RocketMQ接口")
 @RestController
-@RequestMapping("rocket")
-public class TestController {
+@RequestMapping("/api/v1/rocketmq")
+public class RocketMQController {
 
     /**
      * 搭建测试流程生成者
@@ -92,90 +92,100 @@ public class TestController {
     }
 
 
-    @ApiOperation(value = "基本消息样例", notes = "基本消息样例")
+    @ApiOperation(value = "发送普通同步消息", notes = "发送普通同步消息")
     @ApiOperationSupport(order = 10)
-    @GetMapping("/base")
-    public Object base() {
-        // 同步发送
-        baseProducer.sync();
-        // 异步发送
-        baseProducer.async();
-        // 单向发送
-        baseProducer.oneWay();
-        return "基本消息样例";
+    @PostMapping("/base/sync")
+    public Result baseSync(@RequestBody MessageVO messageVO) {
+        boolean bool = baseProducer.sync(messageVO.getBody());
+        return Result.success(bool?"发送成功":"发送失败");
+    }
+
+    @ApiOperation(value = "发送普通异步消息", notes = "发送普通异步消息")
+    @ApiOperationSupport(order = 11)
+    @PostMapping("/base/async")
+    public Result baseAsync(@RequestBody MessageVO messageVO) {
+        boolean bool =baseProducer.async(messageVO.getBody());
+        return Result.success(bool?"发送成功":"发送失败");
+    }
+
+    @ApiOperation(value = "单向发送普通消息", notes = "单向发送普通消息")
+    @ApiOperationSupport(order = 11)
+    @PostMapping("/base/oneway")
+    public Result baseOneway(@RequestBody MessageVO messageVO) {
+        boolean bool =baseProducer.oneWay(messageVO.getBody());
+        return Result.success(bool?"发送成功":"发送失败");
     }
 
     @ApiOperation(value = "发送顺序消息", notes = "发送顺序消息")
     @ApiOperationSupport(order = 15)
-    @GetMapping("/order")
-    public Object order() {
+    @PostMapping("/order")
+    public Result order(@RequestBody MessageVO messageVO) {
         orderProducer.order();
-        return "发送顺序消息";
+        return Result.success("发送成功");
     }
 
 
     @ApiOperation(value = "发送延时消息", notes = "发送延时消息")
     @ApiOperationSupport(order = 20)
-    @GetMapping("/scheduled")
-    public Object scheduled() {
+    @PostMapping("/scheduled")
+    public Result scheduled(@RequestBody MessageVO messageVO) {
         scheduledProducer.scheduled();
-        return "发送延时消息";
+        return Result.success("发送成功");
     }
 
     @ApiOperation(value = "标签过滤消息样例", notes = "标签过滤消息样例")
     @ApiOperationSupport(order = 25)
-    @GetMapping("/tag")
-    public Object tag() {
+    @PostMapping("/tag")
+    public Result tag(@RequestBody MessageVO messageVO) {
         // TAG过滤
         tagProducer.tag();
-        return "指定标签消息";
+        return Result.success("发送成功");
     }
 
     @ApiOperation(value = "SQL92过滤消息样例", notes = "SQL92过滤消息样例")
     @ApiOperationSupport(order = 30)
-    @GetMapping("/selector")
-    public Object selector() {
+    @PostMapping("/selector")
+    public Result selector(@RequestBody MessageVO messageVO) {
         // SQL92过滤
         SQLProducer.selector();
-        return "过滤消息样例";
+        return Result.success("发送成功");
     }
 
     @ApiOperation(value = "消息事务样例", notes = "消息事务样例")
     @ApiOperationSupport(order = 35)
-    @GetMapping("/tx")
-    public Object tx() {
-
+    @PostMapping("/tx")
+    public Result tx(@RequestBody MessageVO messageVO) {
         // 消息事务
         txProducer.tx();
-        return "消息事务样例";
+        return Result.success("发送成功");
     }
 
 
     @ApiOperation(value = "消息额外属性", notes = "消息额外属性")
     @ApiOperationSupport(order = 40)
-    @GetMapping("/ex")
-    public Object ex() {
+    @PostMapping("/ex")
+    public Result ex(@RequestBody MessageVO messageVO) {
         // 消息事务
         exProducer.ex();
-        return "消息额外属性";
+        return Result.success("发送成功");
     }
 
     @ApiOperation(value = "回馈消息样例", notes = "回馈消息样例")
     @ApiOperationSupport(order = 40)
-    @GetMapping("/reply")
-    public Object reply() {
+    @PostMapping("/reply")
+    public Result reply(@RequestBody MessageVO messageVO) {
         // 消息事务
         replyProducer.reply();
-        return "回馈消息样例";
+        return Result.success("发送成功");
     }
 
     @ApiOperation(value = "批量消息样例", notes = "批量消息样例")
     @ApiOperationSupport(order = 45)
-    @GetMapping("/batch")
-    public Object batch() {
+    @PostMapping("/batch")
+    public Result batch(@RequestBody MessageVO messageVO) {
         // 批量消息样例
         batchProducer.batch();
-        return "批量消息样例";
+        return Result.success("发送成功");
     }
 }
 
