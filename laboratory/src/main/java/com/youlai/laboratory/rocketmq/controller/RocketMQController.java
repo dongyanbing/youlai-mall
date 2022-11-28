@@ -5,6 +5,10 @@ import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 
 import com.youlai.common.result.Result;
 import com.youlai.laboratory.rocketmq.pojo.MessageVO;
+import com.youlai.laboratory.rocketmq.pojo.form.BaseAsyncForm;
+import com.youlai.laboratory.rocketmq.pojo.form.BaseOnewayForm;
+import com.youlai.laboratory.rocketmq.pojo.form.BaseSyncForm;
+import com.youlai.laboratory.rocketmq.pojo.form.OrderForm;
 import com.youlai.laboratory.rocketmq.producer.*;
 import com.youlai.laboratory.rocketmq.producer.tx.TxProducer;
 import io.swagger.annotations.Api;
@@ -95,32 +99,32 @@ public class RocketMQController {
     @ApiOperation(value = "发送普通同步消息", notes = "发送普通同步消息")
     @ApiOperationSupport(order = 10)
     @PostMapping("/base/sync")
-    public Result baseSync(@RequestBody MessageVO messageVO) {
-        boolean bool = baseProducer.sync(messageVO.getBody());
+    public Result baseSync(@RequestBody BaseSyncForm baseSyncForm) {
+        boolean bool = baseProducer.sync(baseSyncForm.getMessage1(), baseSyncForm.getMessage2(), baseSyncForm.getMessage3());
         return Result.success(bool?"发送成功":"发送失败");
     }
 
     @ApiOperation(value = "发送普通异步消息", notes = "发送普通异步消息")
     @ApiOperationSupport(order = 11)
     @PostMapping("/base/async")
-    public Result baseAsync(@RequestBody MessageVO messageVO) {
-        boolean bool =baseProducer.async(messageVO.getBody());
+    public Result baseAsync(@RequestBody BaseAsyncForm baseAsyncForm) {
+        boolean bool =baseProducer.async(baseAsyncForm.getMessage1(),baseAsyncForm.getMessage2(),baseAsyncForm.getMessage3());
         return Result.success(bool?"发送成功":"发送失败");
     }
 
     @ApiOperation(value = "单向发送普通消息", notes = "单向发送普通消息")
     @ApiOperationSupport(order = 11)
     @PostMapping("/base/oneway")
-    public Result baseOneway(@RequestBody MessageVO messageVO) {
-        boolean bool =baseProducer.oneWay(messageVO.getBody());
+    public Result baseOneway(@RequestBody BaseOnewayForm baseOnewayForm) {
+        boolean bool =baseProducer.oneWay(baseOnewayForm.getMessage1(),baseOnewayForm.getMessage2(),baseOnewayForm.getMessage3());
         return Result.success(bool?"发送成功":"发送失败");
     }
 
     @ApiOperation(value = "发送顺序消息", notes = "发送顺序消息")
     @ApiOperationSupport(order = 15)
     @PostMapping("/order")
-    public Result order(@RequestBody MessageVO messageVO) {
-        orderProducer.order();
+    public Result order(@RequestBody OrderForm orderForm) {
+        orderProducer.order(orderForm.getCreate(),orderForm.getPay(),orderForm.getDeliver());
         return Result.success("发送成功");
     }
 
