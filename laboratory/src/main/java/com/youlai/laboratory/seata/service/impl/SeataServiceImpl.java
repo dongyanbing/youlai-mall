@@ -1,11 +1,13 @@
 package com.youlai.laboratory.seata.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.youlai.common.result.Result;
 import com.youlai.laboratory.seata.pojo.form.SeataForm;
-import com.youlai.laboratory.seata.pojo.vo.SeataDataVO;
-import com.youlai.laboratory.seata.service.ISeataService;
+import com.youlai.laboratory.seata.pojo.vo.SeataVO;
+import com.youlai.laboratory.seata.service.SeataService;
 import com.youlai.mall.oms.api.OrderFeignClient;
 import com.youlai.mall.oms.dto.OrderInfoDTO;
+import com.youlai.mall.oms.dto.SeataOrderDTO;
 import com.youlai.mall.pms.api.SkuFeignClient;
 import com.youlai.mall.pms.pojo.dto.SkuInfoDTO;
 import com.youlai.mall.ums.api.MemberFeignClient;
@@ -16,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * Seata实验室业务类接口
+ * Seata 实验室业务类接口
  *
  * @author haoxr
  * @date 2022/4/16 20:49
@@ -24,56 +26,17 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class SeataServiceImpl implements ISeataService {
+public class SeataServiceImpl implements SeataService {
 
     private final SkuFeignClient skuFeignClient;
     private final OrderFeignClient orderFeignClient;
     private final MemberFeignClient memberFeignClient;
 
+
     private static Long skuId = 1l; // SkuID
     private static Long memberId = 1l; // 会员ID
-    private static Long orderId = 1l; // 订单ID
+    private static Long orderId = 1l;// 订单ID
 
-    /**
-     * 模拟订单支付
-     *
-     * @return
-     */
-    @Override
-    public boolean payOrder(SeataForm seataForm) {
-
-        log.info("========扣减商品库存========");
-        skuFeignClient.deductStock(skuId, 1); // 扣减库存
-
-        log.info("========扣减账户余额========");
-        memberFeignClient.deductBalance(memberId, 1000 * 100l); // 扣款1000
-
-        log.info("========修改订单状态========");
-        orderFeignClient.updateOrderStatus(orderId, 201, seataForm.isOrderEx()); // 已支付
-
-        return true;
-    }
-
-    /**
-     * 模拟订单支付(分布式事务)
-     *
-     * @param seataForm
-     * @return
-     */
-    @Override
-    @GlobalTransactional
-    public boolean payOrderWithGlobalTx(SeataForm seataForm) {
-        log.info("========扣减商品库存(Seata)========");
-        skuFeignClient.deductStock(skuId, 1); // 扣减库存
-
-        log.info("========扣减账户余额(Seata)========");
-        memberFeignClient.deductBalance(memberId, 1000 * 100l); // 扣款1000
-
-        log.info("========修改订单状态(Seata)========");
-        orderFeignClient.updateOrderStatus(orderId, 201, seataForm.isOrderEx()); // 已支付
-
-        return true;
-    }
 
     /**
      * 获取模拟数据
@@ -81,26 +44,28 @@ public class SeataServiceImpl implements ISeataService {
      * @return
      */
     @Override
-    public SeataDataVO getData() {
-        SeataDataVO seataDataVO = new SeataDataVO();
+    public SeataVO getData() {
+
+
+        SeataVO seataVO = new SeataVO();
 
         SkuInfoDTO skuInfoDTO = skuFeignClient.getSkuInfo(skuId).getData();
-        SeataDataVO.StockInfo stockInfo = new SeataDataVO.StockInfo();
+        SeataVO.StockInfo stockInfo = new SeataVO.StockInfo();
         BeanUtil.copyProperties(skuInfoDTO, stockInfo);
         stockInfo.setName(skuInfoDTO.getSkuName());
-        seataDataVO.setStockInfo(stockInfo);
+        seataVO.setStockInfo(stockInfo);
 
         MemberInfoDTO memberInfoDTO = memberFeignClient.getMemberInfo(memberId).getData();
-        SeataDataVO.AccountInfo accountInfo = new SeataDataVO.AccountInfo();
+        SeataVO.AccountInfo accountInfo = new SeataVO.AccountInfo();
         BeanUtil.copyProperties(memberInfoDTO, accountInfo);
-        seataDataVO.setAccountInfo(accountInfo);
+        seataVO.setAccountInfo(accountInfo);
 
+        SeataVO.OrderInfo orderInfo = new SeataVO.OrderInfo();
         OrderInfoDTO orderInfoDTO = orderFeignClient.getOrderInfo(orderId).getData();
-        SeataDataVO.OrderInfo orderInfo = new SeataDataVO.OrderInfo();
         BeanUtil.copyProperties(orderInfoDTO, orderInfo);
-        seataDataVO.setOrderInfo(orderInfo);
+        seataVO.setOrderInfo(orderInfo);
 
-        return seataDataVO;
+        return seataVO;
     }
 
     /**
@@ -110,10 +75,53 @@ public class SeataServiceImpl implements ISeataService {
      */
     @Override
     public boolean resetData() {
-        skuFeignClient.updateStock(skuId, 999); // 还原库存
-        memberFeignClient.updateBalance(memberId, 10000000 * 100); // 还原余额
-        orderFeignClient.updateOrderStatus(orderId, 101, false); // 待支付
+        skuFeignClient.resetStock(skuId); // 还原库存
+        memberFeignClient.resetBalance(memberId); // 还原余额
+        orderFeignClient.resetOrder(orderId); // 删除订单
         return true;
 
+    }
+
+    /**
+     * 订单支付
+     */
+    @Override
+    public boolean payOrder(SeataForm seataForm) {
+        log.info("========扣减商品库存(全局事务)========");
+        skuFeignClient.deductStock(skuId, 1); // 扣减库存
+
+        log.info("========创建订单(全局事务)========");
+        SeataOrderDTO seataOrderDTO = new SeataOrderDTO(
+                memberId,
+                skuId,
+                seataForm.getAmount(),
+                seataForm.isOpenEx()
+        );
+        orderFeignClient.payOrder(orderId, seataOrderDTO);
+
+        return true;
+    }
+
+    /**
+     * 订单支付(全局事务)
+     */
+    @Override
+    @GlobalTransactional
+    public boolean payOrderWithGlobalTx(SeataForm seataForm) {
+
+        log.info("========扣减商品库存========");
+        skuFeignClient.deductStock(skuId, 1); // 扣减库存
+
+        log.info("========订单支付========");
+        SeataOrderDTO seataOrderDTO = new SeataOrderDTO(
+                memberId,
+                skuId,
+                seataForm.getAmount(),
+                seataForm.isOpenEx()
+        );
+
+        orderFeignClient.payOrder(orderId, seataOrderDTO);
+
+        return true;
     }
 }

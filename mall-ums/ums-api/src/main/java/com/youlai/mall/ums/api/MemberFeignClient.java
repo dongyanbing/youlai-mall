@@ -11,6 +11,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 会员Feign客户端
+ *
+ * @author haoxr
+ * @date 2022/11/29
+ */
 @FeignClient(name = "mall-ums", contextId = "member")
 public interface MemberFeignClient {
 
@@ -34,8 +40,8 @@ public interface MemberFeignClient {
     /**
      * 扣减会员余额
      */
-    @PutMapping("/app-api/v1/members/current/balances/_deduct")
-    <T> Result<T> deductBalance(@RequestParam Long balances);
+    @PutMapping("/app-api/v1/members/{memberId}/balances/_deduct")
+    <T> Result<T> deductBalance(@PathVariable Long memberId, @RequestParam Long amount);
 
     /**
      * 添加浏览记录
@@ -61,7 +67,6 @@ public interface MemberFeignClient {
     @GetMapping("/app-api/v1/members/mobile/{mobile}")
     Result<MemberAuthDTO> loadUserByMobile(@PathVariable String mobile);
 
-
     /**
      * 获取会员地址列表
      *
@@ -72,24 +77,13 @@ public interface MemberFeignClient {
     Result<List<MemberAddressDTO>> listMemberAddresses(@PathVariable Long memberId);
 
     /**
-     * 「实验室」修改会员余额
+     * 「实验室」重置会员余额
      *
      * @param memberId
-     * @param balance  余额(单位:分)
      * @return
      */
-    @PutMapping("/api/v1/members/{memberId}/balance")
-    Result updateBalance(@PathVariable Long memberId, @RequestParam Integer balance);
-
-    /**
-     * 「实验室」扣减会员余额
-     *
-     * @param memberId
-     * @param amount   扣减金额(单位:分)
-     * @return
-     */
-    @PutMapping("/api/v1/members/{memberId}/balance/_deduct")
-    Result deductBalance(@PathVariable Long memberId, @RequestParam Long amount);
+    @PutMapping("/app-api/v1/members/{memberId}/balance/_reset")
+    Result resetBalance(@PathVariable Long memberId);
 
     /**
      * 「实验室」获取会员信息

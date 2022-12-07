@@ -2,32 +2,18 @@ package com.youlai.mall.oms.api;
 
 import com.youlai.common.result.Result;
 import com.youlai.mall.oms.dto.OrderInfoDTO;
+import com.youlai.mall.oms.dto.SeataOrderDTO;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 /**
- * 订单Feign客户端
+ * 订单 Feign Client
  *
  * @author haoxr
- * @createTime 2021/3/13 11:59
+ * @date 2021/3/13
  */
 @FeignClient(value = "mall-oms", contextId = "order")
 public interface OrderFeignClient {
-
-
-    /**
-     * 「实验室」订单状态修改
-     *
-     * @param orderId 订单ID
-     * @param status  订单状态
-     * @param orderEx 订单异常
-     * @return
-     */
-    @PutMapping("/api/v1/orders/{orderId}/status")
-    Result updateOrderStatus(@PathVariable Long orderId, @RequestParam Integer status, @RequestParam Boolean orderEx);
 
     /**
      * 「实验室」获取订单信息
@@ -35,7 +21,22 @@ public interface OrderFeignClient {
      * @param orderId
      * @return
      */
-    @GetMapping("/api/v1/orders/{orderId}/info")
+    @GetMapping("/api/v1/orders/{orderId}/orderInfo")
     Result<OrderInfoDTO> getOrderInfo(@PathVariable Long orderId);
+
+    /**
+     * 「实验室」订单支付
+     *
+     * @param orderDTO
+     * @return
+     */
+    @PutMapping("/api/v1/orders/{orderId}/_pay")
+    Result<String> payOrder(@PathVariable Long orderId, @RequestBody SeataOrderDTO orderDTO);
+
+    /**
+     * 「实验室」订单重置
+     */
+    @PutMapping("/api/v1/orders/{orderId}/_reset")
+    Result resetOrder(@PathVariable Long orderId);
 
 }

@@ -44,24 +44,23 @@ public interface SkuFeignClient {
     Result<Boolean> checkPrice(@RequestBody CheckPriceDTO checkPriceDTO);
 
     /**
-     * 「实验室」修改商品库存
+     * 「实验室」重置商品库存
      *
      * @param skuId
-     * @param stockNum
      * @return
      */
-    @PutMapping("/api/v1/sku/{skuId}/stock_num")
-    Result updateStock(@PathVariable Long skuId, @RequestParam Integer stockNum);
+    @PutMapping("/api/v1/sku/{skuId}/stock/_reset")
+    Result resetStock(@PathVariable Long skuId);
 
 
     /**
      * 「实验室」扣减商品库存
      *
      * @param skuId
-     * @param num   扣减数量
+     * @param count   扣减数量
      * @return
      */
     @PutMapping("/api/v1/sku/{skuId}/stock/_deduct")
-    Result deductStock(@PathVariable Long skuId, @RequestParam Integer num);
+    Result deductStock(@PathVariable Long skuId, @RequestParam Integer count);
 
 }
