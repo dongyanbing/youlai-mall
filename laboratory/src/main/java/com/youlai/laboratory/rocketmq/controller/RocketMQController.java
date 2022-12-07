@@ -5,10 +5,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 
 import com.youlai.common.result.Result;
 import com.youlai.laboratory.rocketmq.pojo.MessageVO;
-import com.youlai.laboratory.rocketmq.pojo.form.BaseAsyncForm;
-import com.youlai.laboratory.rocketmq.pojo.form.BaseOnewayForm;
-import com.youlai.laboratory.rocketmq.pojo.form.BaseSyncForm;
-import com.youlai.laboratory.rocketmq.pojo.form.OrderForm;
+import com.youlai.laboratory.rocketmq.pojo.form.*;
 import com.youlai.laboratory.rocketmq.producer.*;
 import com.youlai.laboratory.rocketmq.producer.tx.TxProducer;
 import io.swagger.annotations.Api;
@@ -132,8 +129,8 @@ public class RocketMQController {
     @ApiOperation(value = "发送延时消息", notes = "发送延时消息")
     @ApiOperationSupport(order = 20)
     @PostMapping("/scheduled")
-    public Result scheduled(@RequestBody MessageVO messageVO) {
-        scheduledProducer.scheduled();
+    public Result scheduled(@RequestBody ScheduledForm scheduledForm) {
+        scheduledProducer.scheduled(scheduledForm.getDelayLevel(),scheduledForm.getBody());
         return Result.success("发送成功");
     }
 
@@ -186,9 +183,9 @@ public class RocketMQController {
     @ApiOperation(value = "批量消息样例", notes = "批量消息样例")
     @ApiOperationSupport(order = 45)
     @PostMapping("/batch")
-    public Result batch(@RequestBody MessageVO messageVO) {
+    public Result batch(@RequestBody BatchForm batchForm) {
         // 批量消息样例
-        batchProducer.batch();
+        batchProducer.batch(batchForm.getMessage1(),batchForm.getMessage2(),batchForm.getMessage3(),batchForm.getMessage4(),batchForm.getMessage5());
         return Result.success("发送成功");
     }
 }

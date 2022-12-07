@@ -21,14 +21,14 @@ public class ScheduledProducer {
     @Resource
     RocketMQTemplate rocketMQTemplate;
 
-    public void scheduled() {
-        String text = "延时消息"+ System.currentTimeMillis();
+    public void scheduled(Integer delayLevel,String body) {
+        String text = "延时"+delayLevel+"消息:"+ body;
         log.info(text);
 
         // 设置延时等级2,这个消息将在5s之后发送
         // 1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h
-        Message<String> message = MessageBuilder.withPayload(text).build();
-        rocketMQTemplate.syncSend("scheduled_topic", message, 1000, 2);
+        Message<String> message = MessageBuilder.withPayload(body).build();
+        rocketMQTemplate.syncSend("scheduled_topic", message, 1000, delayLevel);
 
         log.info("已发送...");
     }

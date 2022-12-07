@@ -25,28 +25,15 @@ public class BatchProducer {
     @Resource
     RocketMQTemplate rocketMQTemplate;
 
-    public void batch() {
-        String text = "批量消息";
-        log.info(text);
-
+    public void batch(String message1,String message2,String message3,String message4,String message5) {
         List<Message> messageList = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            messageList.add(MessageBuilder.withPayload(text + "--" + i).build());
-        }
+        messageList.add(MessageBuilder.withPayload(message1).build());
+        messageList.add(MessageBuilder.withPayload(message2).build());
+        messageList.add(MessageBuilder.withPayload(message3).build());
+        messageList.add(MessageBuilder.withPayload(message4).build());
+        messageList.add(MessageBuilder.withPayload(message5).build());
         log.info("开始发送...");
-
-        //把大的消息分裂成若干个小的消息
-        MessageSplitter splitter = new MessageSplitter(messageList);
-
-        while (splitter.hasNext()) {
-            List<Message> nextList = splitter.next();
-            SendResult result = rocketMQTemplate.syncSend("batch_topic", nextList);
-            if (result.getSendStatus() == SendStatus.SEND_OK) {
-                log.info("发送批量消息成功!消息ID为:{}", result.getMsgId());
-            } else {
-                log.info("发送批量消息失败!消息ID为:{},消息状态为:{}", result.getMsgId(), result.getSendStatus());
-            }
-        }
+        SendResult result = rocketMQTemplate.syncSend("batch_topic", messageList);
         log.info("已发送...");
     }
 }
