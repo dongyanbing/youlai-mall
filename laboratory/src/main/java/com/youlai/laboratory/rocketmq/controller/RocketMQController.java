@@ -8,6 +8,7 @@ import com.youlai.laboratory.rocketmq.pojo.MessageVO;
 import com.youlai.laboratory.rocketmq.pojo.form.*;
 import com.youlai.laboratory.rocketmq.producer.*;
 import com.youlai.laboratory.rocketmq.producer.tx.TxProducer;
+import com.youlai.laboratory.seata.pojo.form.SeataForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
@@ -155,9 +156,9 @@ public class RocketMQController {
     @ApiOperation(value = "消息事务样例", notes = "消息事务样例")
     @ApiOperationSupport(order = 35)
     @PostMapping("/tx")
-    public Result tx(@RequestBody MessageVO messageVO) {
-        // 消息事务
-        txProducer.tx();
+    public Result tx(@RequestBody SeataForm seataForm) {
+        boolean openTx = seataForm.isOpenTx();
+        txProducer.tx(seataForm);
         return Result.success("发送成功");
     }
 

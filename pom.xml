@@ -73,6 +73,7 @@
         <!-- distributed -->
         <seata.version>1.5.2</seata.version>
         <redisson.version>3.16.8</redisson.version>
+        <rocketmq.version>2.2.2</rocketmq.version>
 
         <!-- 阿里云短信 -->
         <aliyun.java.sdk.core.version>4.5.25</aliyun.java.sdk.core.version>
@@ -280,6 +281,13 @@
                 <groupId>com.youlai</groupId>
                 <artifactId>common-seata</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rocketmq.version}</version>
             </dependency>
 
             <dependency>
