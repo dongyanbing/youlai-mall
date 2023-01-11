@@ -1,38 +1,33 @@
 package com.youlai.mall.oms.controller.app;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.youlai.common.base.IBaseEnum;
 import com.youlai.common.result.PageResult;
 import com.youlai.common.result.Result;
-import com.youlai.mall.oms.enums.PayTypeEnum;
 import com.youlai.mall.oms.pojo.entity.OmsOrder;
 import com.youlai.mall.oms.pojo.form.OrderSubmitForm;
 import com.youlai.mall.oms.pojo.query.OrderPageQuery;
 import com.youlai.mall.oms.pojo.vo.OrderConfirmVO;
-import com.youlai.mall.oms.pojo.vo.OrderSubmitVO;
-import com.youlai.mall.oms.service.IOrderService;
+import com.youlai.mall.oms.pojo.vo.OrderSubmitResultVO;
+import com.youlai.mall.oms.service.OrderService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 /**
+ * 「移动端」订单控制层
+ *
  * @author huawei
- * @email huawei_code@163.com
- * @date 2020-12-30 22:31:10
+ * @date 2020/12/30
  */
-@Api(tags = "「移动端」订单管理")
+@Api(tags = "「移动端」订单接口")
 @RestController
 @RequestMapping("/app-api/v1/orders")
 @RequiredArgsConstructor
 public class OrderController {
 
-    final IOrderService orderService;
+    final OrderService orderService;
 
     @ApiOperation("分页列表")
     @GetMapping
@@ -60,20 +55,15 @@ public class OrderController {
     @ApiOperation("订单提交")
     @PostMapping("/_submit")
     public Result submitOrder(@RequestBody @Validated OrderSubmitForm orderSubmitForm) {
-        OrderSubmitVO result = orderService.submitOrder(orderSubmitForm);
+        OrderSubmitResultVO result = orderService.submitOrder(orderSubmitForm);
         return Result.success(result);
     }
 
     @ApiOperation("订单支付")
     @PostMapping("/{orderId}/_pay")
-    @ApiImplicitParams({@ApiImplicitParam(name = "orderId", value = "订单ID", paramType = "path", dataType = "Long"), @ApiImplicitParam(name = "payType", value = "支付方式", paramType = "query", dataType = "Integer"), @ApiImplicitParam(name = "appId", value = "小程序appId", paramType = "query", dataType = "String")})
-    public <T> Result<T> pay(@PathVariable Long orderId, Integer payType, String appId) {
-
-        PayTypeEnum payTypeEnum = IBaseEnum.getEnumByValue(payType, PayTypeEnum.class);
-        if (payTypeEnum == null) {
-            return Result.failed("系统暂不支持该支付方式~");
-        }
-        return Result.success(orderService.pay(orderId, appId, payTypeEnum));
+    public Result payOrder(@PathVariable Long orderId) {
+        boolean result = orderService.payOrder(orderId);
+        return Result.judge(result);
     }
 
     @ApiOperation("订单删除")
@@ -83,10 +73,4 @@ public class OrderController {
         return Result.judge(result);
     }
 
-    @ApiOperation("订单取消")
-    @PutMapping("/cancel")
-    public Result cancel(@RequestParam Long id) {
-        boolean result = orderService.cancelOrder(id);
-        return Result.judge(result);
-    }
 }
