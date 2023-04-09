@@ -147,7 +147,7 @@ youlai-mall
 
 6. **修改Nacos配置中心地址**
 
-   批量替换应用的 bootstrap-dev.yml 文件的配置中心地址 `http://c.youlai.tech:8848` → `http://localhost:8848` ，默认「有来」线上的配置中心地址。
+   批量替换应用的 bootstrap-dev.yml 文件的配置中心地址 `http://f.youlai.tech:8848` → `http://localhost:8848` ，默认「有来」线上的配置中心地址。
 
 7. **服务启动**
 
@@ -155,7 +155,7 @@ youlai-mall
 
    - 进入 `youlai-auth` 模块的启动类 AuthApplication 启动认证授权中心；
 
-   - 进入 `youlai-system`  → `system-boot` 模块的启动类 AdminApplication 启动系统服务；
+   - 进入 `youlai-system`  → `system-boot` 模块的启动类 SystemApplication 启动系统服务；
 
    - 至此完成基础服务的启动，商城服务按需启动，启动方式和 `youlai-system` 一致;
 
