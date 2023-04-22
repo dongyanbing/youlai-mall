@@ -35,6 +35,10 @@ public class SysUser extends BaseEntity {
 
     private Long deptId;
 
+    private Long createBy;
+
+    private Long updateBy;
+
     @ApiModelProperty("逻辑删除标识(1:删除;0:正常)")
     @TableLogic(value = "0", delval = "1")
     private Integer deleted;

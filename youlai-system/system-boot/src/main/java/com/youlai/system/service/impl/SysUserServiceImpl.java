@@ -123,7 +123,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 设置默认加密密码
         String defaultEncryptPwd = passwordEncoder.encode(SystemConstants.DEFAULT_USER_PASSWORD);
         entity.setPassword(defaultEncryptPwd);
-
+        entity.setCreateBy(SecurityUtils.getUserId());
         // 新增用户
         boolean result = this.save(entity);
 
@@ -155,7 +155,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         // form -> entity
         SysUser entity = userConverter.form2Entity(userForm);
-
+        entity.setUpdateBy(SecurityUtils.getUserId());
         // 修改用户
         boolean result = this.updateById(entity);
 
@@ -196,6 +196,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         boolean result = this.update(new LambdaUpdateWrapper<SysUser>()
                 .eq(SysUser::getId, userId)
                 .set(SysUser::getPassword, encryptedPassword)
+                .set(SysUser::getUpdateBy, SecurityUtils.getUserId())
         );
 
         return result;
@@ -288,7 +289,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             // 性别转换
             Integer gender = (Integer) IBaseEnum.getValueByLabel(userItem.getGender(), GenderEnum.class);
             user.setGender(gender);
-
+            user.setCreateBy(SecurityUtils.getUserId());
+            user.setUpdateBy(SecurityUtils.getUserId());
             saveUserList.add(user);
         }
 

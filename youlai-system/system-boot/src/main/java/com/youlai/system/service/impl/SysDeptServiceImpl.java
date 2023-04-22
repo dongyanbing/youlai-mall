@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.youlai.common.constant.SystemConstants;
 import com.youlai.common.enums.StatusEnum;
+import com.youlai.common.security.util.SecurityUtils;
 import com.youlai.common.web.model.Option;
 import com.youlai.system.converter.DeptConverter;
 import com.youlai.system.mapper.SysDeptMapper;
@@ -128,6 +129,8 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         // 部门路径
         String treePath = generateDeptTreePath(formData.getParentId());
         entity.setTreePath(treePath);
+        entity.setCreateBy(SecurityUtils.getUserId());
+        entity.setUpdateBy(SecurityUtils.getUserId());
         // 保存部门并返回部门ID
         this.save(entity);
         return entity.getId();
@@ -141,6 +144,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         // 部门路径
         String treePath = generateDeptTreePath(formData.getParentId());
         entity.setTreePath(treePath);
+        entity.setUpdateBy(SecurityUtils.getUserId());
         // 保存部门并返回部门ID
         this.updateById(entity);
         return entity.getId();
