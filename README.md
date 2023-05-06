@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://img.shields.io/badge/SpringBoot-2.7.5-brightgreen.svg"/>
+    <img src="https://img.shields.io/badge/SpringBoot-2.7.8-brightgreen.svg"/>
     <img src="https://img.shields.io/badge/SpringCloud & Alibaba -2021-green.svg"/>
     <a src="https://github.com/hxrui" target="_blank">
         <img src="https://img.shields.io/github/stars/youlaitech/youlai-mall.svg?style=social&label=Stars"/>
@@ -50,9 +50,9 @@
 | 商城管理端 | [mall-admin](https://gitee.com/youlaiorg/mall-admin)   | [mall-admin](https://github.com/youlaitech/mall-admin)   | -       |
 | 移动应用端 | [mall-app](https://gitee.com/youlaiorg/mall-app)       | [mall-app](https://github.com/youlaitech/mall-app)       | -       |
 
-##  🗂目录结构
+##  🗂项目结构
 
-``` cassandra
+```
 youlai-mall
 ├── docs  
     ├── nacos      -- Nacos配置
@@ -189,9 +189,9 @@ youlai-mall
 
 > 群二维码失效添加开发者，备注“有来”进群即可
 
-| 交流群                                                                             | 开发者          | 开发者                                                                        |
-|---------------------------------------------------------------------------------|-------------------------------------------------|----------------------------------------------------------------------------|
-| <img src="https://s2.loli.net/2023/04/11/Xlfo6Vwb8RtW5sS.jpg" height="250px" /> |<img src="https://www.youlai.tech/files/blog/rui.jpg" height="250px" /> | <img src="https://www.youlai.tech/files/blog/chuan.jpg" height="250px" />    |
+| 交流群                                                                             | 开发者                                             | 开发者                                               |
+|---------------------------------------------------------------------------------|-------------------------------------------------|---------------------------------------------------|
+| ![](https://s2.loli.net/2023/05/06/7OJ96qfybNznMaP.png) | ![](https://www.youlai.tech/files/blog/rui.jpg) | ![](https://www.youlai.tech/files/blog/chuan.jpg) |
 
 
 
